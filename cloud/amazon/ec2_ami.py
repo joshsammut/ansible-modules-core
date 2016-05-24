@@ -395,6 +395,9 @@ def create_image(module, ec2):
 
             if img.state == 'available':
                 break
+            if img.state == 'failed':
+                module.fail_json(msg="AWS error while creating image %s" % (img.id))
+
         except boto.exception.EC2ResponseError, e:
             if ('InvalidAMIID.NotFound' not in e.error_code and 'InvalidAMIID.Unavailable' not in e.error_code) and wait and i == wait_timeout - 1:
                 module.fail_json(msg="Error while trying to find the new image. Using wait=yes and/or a longer wait_timeout may help. %s: %s" % (e.error_code, e.error_message))
